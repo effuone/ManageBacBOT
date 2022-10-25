@@ -14,6 +14,18 @@ const originUrl = "https://isnur-sultan.managebac.com";
       });
     return courses;
   }
+  export const checkValidity = async (email, password) => {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto(`${originUrl}/login`, { waitUntil: "networkidle0" }); // wait until page load
+    await page.type("#session_login", email);
+    await page.type("#session_password", password);
+    await Promise.all([
+      page.click(".btn-block"),
+      page.waitForNavigation({ waitUntil: "networkidle0" }),
+    ]);
+    
+  }
   export const getServiceCookies = async (email, password) => {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
@@ -24,6 +36,11 @@ const originUrl = "https://isnur-sultan.managebac.com";
       page.click(".btn-block"),
       page.waitForNavigation({ waitUntil: "networkidle0" }),
     ]);
+    const data = await page.evaluate(() => document.querySelector('*').outerHTML);
+    if(data.indexOf('Error.'))
+    {
+      return -1;
+    }
     const cookies = await page.cookies();
     await browser.close();
     // console.log(cookies)

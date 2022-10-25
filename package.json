@@ -1,5 +1,5 @@
 {
-  "name": "pupeteerdemo",
+  "name": "managebac_bot",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,9 +12,13 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^1.1.2",
+    "bcryptjs": "^2.4.3",
     "cheerio": "^1.0.0-rc.12",
     "dotenv": "^16.0.3",
+    "node-telegram-bot-api": "^0.59.0",
     "nodemon": "^2.0.20",
+    "pg-hstore": "^2.3.4",
+    "postgres-pool": "^6.0.5",
     "puppeteer": "^18.2.1",
     "puppeteer-core": "^18.2.1"
   }
