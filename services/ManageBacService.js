@@ -47,9 +47,6 @@ const originUrl = "https://isnur-sultan.managebac.com";
     {
       return false;
     }
-    await page.screenshot({
-      path: 'screenshot.jpg'
-    });
     const cookies = await page.cookies();
     await browser.close();
     // console.log(cookies)
