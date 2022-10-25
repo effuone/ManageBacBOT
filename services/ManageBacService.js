@@ -30,7 +30,10 @@ const originUrl = "https://isnur-sultan.managebac.com";
     
   }
   export const getServiceCookies = async (email, password) => {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+    });
     const page = await browser.newPage();
     await page.goto(`${originUrl}/login`, { waitUntil: "networkidle0" }); // wait until page load
     await page.type("#session_login", email);
