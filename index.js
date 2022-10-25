@@ -18,7 +18,8 @@ const startBot = () => {
     { command: "/upcoming", description: "Get upcoming tasks" },
   ])
   bot.onText(/\/start/, async msg=> {
-    bot.sendMessage(msg.chat.id, `Hello! I am ManageBacBOT, who sends your upcoming tasks and saves your time:)
+    console.log(`${msg.chat.first_name} pressed /start.`)
+    bot.sendMessage(msg.chat.id, `Hello ${msg.chat.first_name}! I am ManageBacBOT, who sends your upcoming tasks and saves your time:)
     \nPress /login for authorizing to ManageBac
     \nAlso, contact developer's email for any questions or ideas to implement: seitov_a@isa.nis.edu.kz`)
     bot.sendSticker(msg.chat.id, 'https://tgram.ru/wiki/stickers/img/HotCherry/gif/5.gif')
@@ -61,7 +62,6 @@ const startBot = () => {
   })
   bot.onText(/\/upcoming/, async msg=> {
    const getUsersCookieQuery = await pgPool.query(`SELECT* FROM users where chat_id = $1`, [msg.chat.id])
-   console.log(getUsersCookieQuery)
    if(getUsersCookieQuery.rows.length > 0)
    {
     const upcomingTasks = await ManageBacService.getUpcomingTasks(getUsersCookieQuery.rows[0].cookie_str)
