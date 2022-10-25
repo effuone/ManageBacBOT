@@ -37,10 +37,13 @@ const originUrl = "https://isnur-sultan.managebac.com";
       page.waitForNavigation({ waitUntil: "networkidle0" }),
     ]);
     const data = await page.evaluate(() => document.querySelector('*').outerHTML);
-    if(data.indexOf('Error.'))
+    if(data.indexOf('Error.')>0)
     {
-      return -1;
+      return false;
     }
+    await page.screenshot({
+      path: 'screenshot.jpg'
+    });
     const cookies = await page.cookies();
     await browser.close();
     // console.log(cookies)
