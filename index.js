@@ -23,6 +23,8 @@ const startBot = () => {
     console.log(`${msg.chat.first_name} pressed /start.`)
     bot.sendMessage(msg.chat.id, `Hello ${msg.chat.first_name}! I am ManageBacBOT, who sends your upcoming tasks and saves your time:)
     \nPress /login for authorizing to ManageBac
+    \nPress /upcoming to check upcoming assignments
+    \nPress /stats to calculate your average performance results
     \nAlso, contact developer's email for any questions or ideas to implement: seitov_a@isa.nis.edu.kz`)
     bot.sendSticker(msg.chat.id, 'https://tgram.ru/wiki/stickers/img/HotCherry/gif/5.gif')
   })
