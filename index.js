@@ -16,7 +16,8 @@ const startBot = () => {
     { command: "/start", description: "Description of the bot" },
     { command: "/login", description: "Authorize to ManageBac" },
     { command: "/upcoming", description: "Get upcoming tasks" },
-    { command: "/logout", description: "Leave from ManageBac" }
+    { command: "/logout", description: "Leave from ManageBac" },
+    {command: '/stats', description: "Get your GPA, test results and general performance"}
   ])
   bot.onText(/\/start/, async msg=> {
     console.log(`${msg.chat.first_name} pressed /start.`)
@@ -98,6 +99,34 @@ const startBot = () => {
    {
     bot.sendMessage(msg.chat.id, 'Authorize first, please. Press /login')
    }
+  })
+  bot.onText(/\/stats/, async msg=> {
+    const getUsersCookieQuery = await pgPool.query(`SELECT* FROM users where chat_id = $1`, [msg.chat.id])
+    if(getUsersCookieQuery.rows.length > 0)
+    {
+     const courseGrades = await ManageBacService.getCourseGrades(getUsersCookieQuery.rows[0].cookie_str)
+     courseGrades.sort((a,b)=>{
+      if ( a.grade < b.grade ){
+        return 1;
+      }
+      if ( a.grade > b.grade ){
+        return -1;
+      }
+      return 0;
+     })
+     let gradesMessage = ''
+     let totalSumOfTheGrades = 0
+     for (let i = 0; i < courseGrades.length; i++) {
+       gradesMessage+=`Subject: ${courseGrades[i].name}\nMark percentage: ${courseGrades[i].grade}%\n\n`
+       totalSumOfTheGrades+=courseGrades[i].grade
+     }
+     gradesMessage+=`\nAverage mark percentage: ${parseFloat(totalSumOfTheGrades/courseGrades.length).toFixed(2)}%`
+     bot.sendMessage(msg.chat.id, gradesMessage)
+    }
+    else
+    {
+     bot.sendMessage(msg.chat.id, 'Authorize first, please. Press /login')
+    }
   })
 }
 startBot();

@@ -2,32 +2,47 @@ import puppeteer from "puppeteer";
 import cheerio from "cheerio";
 import axios from 'axios'
 const originUrl = "https://isnur-sultan.managebac.com";
-  export const getCourses = (html) => {
+  export const getCourses = async (cookie) => {
+    const html = (await axios.get(originUrl+'/student/profile', {
+      withCredentials: true,
+      headers: {
+        "Cookie": cookie
+      }
+    })).data
     const courses = [];
+    const $ = cheerio.load(html)
     $(".parent", html)
       .find("li")
       .each(function () {
         const course = new Object();
         course.name = $(this).find("span").text();
         course.link = originUrl + $(this).find("a").attr("href");
-        courses.push(course);
+        if(course.name.length!==0)
+          courses.push(course);
       });
     return courses;
   }
-  export const checkValidity = async (email, password) => {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
-    });
-    const page = await browser.newPage();
-    await page.goto(`${originUrl}/login`, { waitUntil: "networkidle0" }); // wait until page load
-    await page.type("#session_login", email);
-    await page.type("#session_password", password);
-    await Promise.all([
-      page.click(".btn-block"),
-      page.waitForNavigation({ waitUntil: "networkidle0" }),
-    ]);
-    
+  export const getCourseGrade = async (courseUrl, cookie) => {
+    const html = (await axios.get(courseUrl+'/units', {
+      withCredentials: true,
+      headers: {
+        "Cookie": cookie,
+        "User-Agent": 'PostmanRuntime/7.29.2'
+      }
+    })).data
+    const $ = cheerio.load(html)
+    const overallElement = ($('.list-item').eq(1).text())
+    const start = overallElement.indexOf('(') + 1
+    const end = overallElement.indexOf(')') - 1
+    const grade = parseFloat(overallElement.substring(start, end))
+    return grade;
+  }
+  export const getCourseGrades = async (cookie) => {
+    const courses = await getCourses(cookie);
+    for (let i = 0; i < courses.length; i++) {
+      courses[i].grade = await getCourseGrade(courses[i].link, cookie);
+    }
+    return courses;
   }
   export const getServiceCookies = async (email, password) => {
     const browser = await puppeteer.launch({
